@@ -8,6 +8,6 @@ setup(
     name="cognite-package_template",
     version=version,
     packages=["cognite." + p for p in find_packages(where="cognite")],
-    install_requires=[],
+    install_requires=['pandas', 'numpy'],
     python_requires=">=3.5",
 )
