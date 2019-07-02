@@ -32,7 +32,10 @@ def columns_by_max_cross_correlation(df: DataFrame, relate_to: Union[int, str], 
     max_corr_idxs = np.abs(cross_correlations).argmax(axis=0)
     max_lags = lag[max_corr_idxs]
 
-
-    return [(col, corr, lag) for col, corr, lag in zip()]
+    # Sorted indices by correlation
+    max_corrs = np.abs(cross_correlations).max(axis=0)
+    sorted_idxs = cross_correlations[::-1].argsort()
+    return [(col, corr, lag) for col, corr, lag in
+            zip(df.columns[sorted_idxs], max_corrs[sorted_idxs], max_lags[sorted_idxs])]
 
 
