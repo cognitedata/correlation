@@ -14,7 +14,37 @@ def cross_correlate(df: DataFrame, relate_to: Union[int, str], lag=0):
     return correlations
 
 
-def columns_by_max_cross_correlation(df: DataFrame, relate_to: Union[int, str], lag=np.ndarray) -> List[Tuple[Union[str, int], float, int]]:
+def make_even(df, interval_ms):
+    # Every point must fit the granularity
+    # print(interval_ms, df.timestamp.diff(1))
+    # print(df.timestamp.diff(1)[1:][50], interval_ms, np.unique(df.timestamp.diff(1)[1:]))
+    print(np.unique(np.round(df.timestamp.diff()[1:] % interval_ms, decimals=5) == 0, return_counts=True))
+    assert np.all(np.round(df.timestamp.diff(1)[1:] % interval_ms) == 0), \
+        'Every data point in data frame must fit with the mode of the time deltas'
+
+    # Check if already even
+    if np.all(df.timestamp.diff()[1:] == interval_ms):
+        return df
+
+    # Get start and end points
+    start = df.timestamp.values[0]
+    end = df.timestamp.values[-1]
+    df = df.set_index("timestamp")
+
+    # Create a new index with all values in-between
+    new_index = np.arange(start, end + 1, interval_ms)
+    print(df)
+    df = df.reindex(new_index)
+    print(df)
+
+    # Fill nans with interpolated values
+    df = df.interpolate()
+
+    return df.reset_index()
+
+
+def columns_by_max_cross_correlation(df: DataFrame, relate_to: Union[int, str], lag: np.ndarray,
+                                     interpolator: str = 'akima') -> DataFrame:
     """Find lag of highest correlation and return relevant information for all tags.
 
     Args:
