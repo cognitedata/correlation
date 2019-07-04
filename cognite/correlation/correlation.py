@@ -47,20 +47,33 @@ def make_even(df, interval_ms):
 def columns_by_max_cross_correlation(df: DataFrame, relate_to: Union[int, str], lag: np.ndarray,
                                      interpolator: str = 'akima') -> DataFrame:
     """Find lag of highest correlation and return relevant information for all tags.
+    Note that the operation requires a DataFrame with even temporal spacing, and will interpolate to match the
+    smallest spacing.
 
     Args:
         df (DataFrame): Time series data
         relate_to (Union[int, str]): Column to compare others with
-        lag (np.ndarray): Iterable list of lag values to try
-
+        lag (np.ndarray): NumPy array for time shifting space to search
+        interpolator (str): Interpolator to use for shifting the timeseries
     Returns:
         List[Tuple[Union[str, int], float, int]]: Sorted list of (column, max_correlation, lag) by descending correlation
     """
+    # Enforce most common time spacing in main column
+    interval_ms = df.timestamp.diff().min()
+    relate_to_df = make_even(df[['timestamp', relate_to]], interval_ms)[relate_to]
+
+    # Round lag timings to integer shifts
+    lag_idx = np.unique(lag // interval_ms).astype(int)
+
+    # Interpolate for all levels of lag
     cross_correlations = np.zeros(shape=(lag.shape[0], df.shape[1]))
-    for i, l in enumerate(lag):
-        cross_correlations[i] = cross_correlate(df, relate_to, lag=l)
-    # Find optimal lag
-    max_corr_idxs = np.abs(cross_correlations).argmax(axis=0)
+    for i, l in enumerate(lag_idx):
+        cross_correlations[i] = cross_correlate(df, relate_to_df, lag_idx=l)
+        print(df, relate_to_df.shift(-l))
+    print(cross_correlations)
+
+    # Find optimal lag for every feature
+    max_corr_idxs = np.nanargmax(np.abs(cross_correlations), axis=0)
     max_lags = lag[max_corr_idxs]
 
     # Sorted indices by correlation
