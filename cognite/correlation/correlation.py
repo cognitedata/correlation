@@ -4,13 +4,14 @@ import numpy as np
 
 
 def columns_by_correlation(df: DataFrame, relate_to: Union[int, str], lag=0) -> List[Tuple[Union[int, str], float]]:
-    correlations = cross_correlate(**locals())
+    correlations = cross_correlate(df, df[relate_to], lag)
     sort_corr: List[int] = sorted(df.columns, key=lambda x: np.abs(correlations)[x], reverse=True)
     return [(col, corr) for col, corr in zip(sort_corr, correlations[sort_corr])]
 
 
-def cross_correlate(df: DataFrame, relate_to: Union[int, str], lag=0):
-    correlations = df.corrwith(df[relate_to].shift(-lag))
+def cross_correlate(df: DataFrame, relate_to_df: DataFrame, lag_idx=0):
+    # Uneven spacing will lead to NaNs, which means less data will be used
+    correlations = df.corrwith(relate_to_df.shift(-lag_idx))
     return correlations
 
 
