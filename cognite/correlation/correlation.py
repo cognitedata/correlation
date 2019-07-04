@@ -56,7 +56,7 @@ def columns_by_max_cross_correlation(df: DataFrame, relate_to: Union[int, str], 
         lag (np.ndarray): NumPy array for time shifting space to search
         interpolator (str): Interpolator to use for shifting the timeseries
     Returns:
-        List[Tuple[Union[str, int], float, int]]: Sorted list of (column, max_correlation, lag) by descending correlation
+        DataFrame: Sorted DataFrame with columns (column, max_correlation, lag) by descending correlation
     """
     # Enforce most common time spacing in main column
     interval_ms = df.timestamp.diff().min()
@@ -77,9 +77,12 @@ def columns_by_max_cross_correlation(df: DataFrame, relate_to: Union[int, str], 
     max_lags = lag[max_corr_idxs]
 
     # Sorted indices by correlation
-    max_corrs = np.abs(cross_correlations).max(axis=0)
-    sorted_idxs = cross_correlations[::-1].argsort()
-    return [(col, corr, lag) for col, corr, lag in
-            zip(df.columns[sorted_idxs], max_corrs[sorted_idxs], max_lags[sorted_idxs])]
-
-
+    max_corrs = np.nanmax(np.abs(cross_correlations), axis=0)
+    sorted_idxs = max_corrs.argsort()[::-1]
+    print(max_corr_idxs.shape, max_corrs.shape, sorted_idxs)
+    out_df = DataFrame({
+        'col': df.columns[sorted_idxs],
+        'corr': max_corrs[sorted_idxs],
+        'lag': max_lags[sorted_idxs]
+    })
+    return out_df
