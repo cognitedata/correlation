@@ -48,20 +48,17 @@ def test_correlation_sort_nans():
 
 
 def test_max_cross_correlation():
-    return
-    drange = pd.date_range(start=datetime(2017, 1, 1), end=datetime(2018, 1, 1), periods=500)
-    ddiff = drange - datetime()
+    drange = pd.date_range(start=datetime(2017, 1, 1), end=datetime(2018, 1, 1), freq='30D')
+    ddiff = drange - datetime(2017, 1, 1)
     df = pd.DataFrame({
         'datetime': drange,
-        'x': np.sin(2 * np.pi * (drange / timedelta(days=60))) + np.random.rand(500) * 0.1,
-        'y': np.sin(2 * np.pi * (drange + timedelta(days=30)) / timedelta(days=60)),  # Response after x
-        'z': np.sin(2 * np.pi * (drange - timedelta(days=30)) / timedelta(days=60)) + np.random.rand(500) * 0.3,
+        'x': np.sin(2 * np.pi * (ddiff / timedelta(days=60))) + np.random.rand(ddiff.shape[0]) * 0.1,
+        'y': np.sin(2 * np.pi * ((ddiff + timedelta(days=30)) / timedelta(days=60))),  # Response after x
+        'z': np.sin(2 * np.pi * ((ddiff - timedelta(days=30)) / timedelta(days=60))) + np.random.rand(ddiff.shape[0]) * 0.3,
     })
-    print(df.head())
     df.set_index('datetime', inplace=True)
     # Want to find a cause, will only look back in time
     lags = pd.timedelta_range(start=timedelta(days=-50), end=timedelta(days=50), periods=101)
     corr_info = cognite.correlation.columns_by_max_cross_correlation(df, 'y', lags)
-    print(corr_info)
     assert np.round(corr_info['corr'][0], decimals=7) == 1
     assert corr_info['lag'][0] == timedelta(0)
