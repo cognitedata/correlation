@@ -26,25 +26,11 @@ def test_cross_correlate():
     assert corr['z'] == 0.04169206868197918
 
 
-def test_correlation_sort():
-    np.random.seed(0)
-    df = no_na
-    corr_sort = cognite.correlation.columns_by_correlation(df, 'y')
-    assert corr_sort[0][0] == 'y'
-
-
 def test_cross_correlate_nans():
     np.random.seed()
     df = with_na
     corr = cognite.correlation.cross_correlate(df, df['x'])
     assert not corr.isna().any()
-
-
-def test_correlation_sort_nans():
-    np.random.seed(0)
-    df = with_na
-    corr_sort = cognite.correlation.columns_by_correlation(df, 'y')
-    assert corr_sort[0][0] == 'y'
 
 
 def test_max_cross_correlation():
@@ -59,6 +45,10 @@ def test_max_cross_correlation():
     df.set_index('datetime', inplace=True)
     # Want to find a cause, will only look back in time
     lags = pd.timedelta_range(start=timedelta(days=-50), end=timedelta(days=50), periods=101)
-    corr_info = cognite.correlation.columns_by_max_cross_correlation(df, 'y', lags)
+    corr_info, cross = cognite.correlation.columns_by_max_cross_correlation(df, 'y', lags,
+                                                                            return_cross_correlation_df=True)
     assert np.round(corr_info['corr'][0], decimals=7) == 1
     assert corr_info['lag'][0] == timedelta(0)
+    assert cross['y'][timedelta(0)] == 1
+    reg_corr_info = cognite.correlation.columns_by_max_cross_correlation(df, 'y', lags)
+    assert reg_corr_info.equals(corr_info)
