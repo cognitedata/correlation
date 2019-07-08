@@ -3,15 +3,21 @@ import pandas as pd
 import numpy as np
 
 
-def columns_by_correlation(df: pd.DataFrame, relate_to: Union[int, str], lag=0) -> List[Tuple[Union[int, str], float]]:
-    correlations = cross_correlate(df, df[relate_to], lag)
-    sort_corr: List[int] = sorted(df.columns, key=lambda x: np.abs(correlations)[x], reverse=True)
-    return [(col, corr) for col, corr in zip(sort_corr, correlations[sort_corr])]
+def cross_correlate(df: pd.DataFrame, relate_to_series: pd.Series, lag_idx=0):
+    """Calculate cross correlation for a given lag.
 
+    It is recommended to either have a lot of data in the data frame, or to use a short time frame for the lags,
+    as the results are unstable if too few data points overlap in the time shifted time series.
 
-def cross_correlate(df: pd.DataFrame, relate_to_df: pd.DataFrame, lag_idx=0):
-    # Uneven spacing will lead to NaNs, which means less data will be used
-    correlations = df.corrwith(relate_to_df.shift(-lag_idx))
+    Args:
+        df (pandas.Series): Time series data to correlate with some series
+        relate_to_series (pandas.Series): Pandas Series with time series data to relate df to. Must have the same
+        temporal spacing as df.
+        lag_idx (int): The amount of indices to move the DataFrame in relation to the series.
+    Returns:
+        pandas.DataFrame
+    """
+    correlations = df.corrwith(relate_to_series.shift(-lag_idx))
     return correlations
 
 
