@@ -15,35 +15,6 @@ def cross_correlate(df: pd.DataFrame, relate_to_df: pd.DataFrame, lag_idx=0):
     return correlations
 
 
-def make_even(df, interval_ms, interpolator):
-    # Every point must fit the granularity
-    # print(interval_ms, df.timestamp.diff(1))
-    # print(df.timestamp.diff(1)[1:][50], interval_ms, np.unique(df.timestamp.diff(1)[1:]))
-    # print(np.unique(np.round(df.timestamp.diff()[1:] % interval_ms, decimals=5) == 0, return_counts=True))
-    assert np.all(np.round(df.timestamp.diff(1)[1:] % interval_ms) == 0), \
-        'Every data point in data frame must fit with the mode of the time deltas'
-
-    # Check if already even
-    if np.all(df.timestamp.diff()[1:] == interval_ms):
-        return df
-
-    # Get start and end points
-    start = df.timestamp.values[0]
-    end = df.timestamp.values[-1]
-    df = df.set_index("timestamp")
-
-    # Create a new index with all values in-between
-    new_index = np.arange(start, end + 1, interval_ms)
-    # print(df)
-    df = df.reindex(new_index)
-    # print(df)
-
-    # Fill nans with interpolated values
-    df = df.interpolate(method=interpolator)
-
-    return df.reset_index()
-
-
 def columns_by_max_cross_correlation(df: pd.DataFrame,
                                      relate_to: Union[int, str],
                                      lags: pd.TimedeltaIndex,
