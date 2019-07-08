@@ -59,13 +59,19 @@ def columns_by_max_cross_correlation(df: pd.DataFrame,
         df (DataFrame): Time series data
         relate_to (Union[int, str]): Column to compare others with
         lags (pd.TimedeltaIndex): Pandas sequence of timedeltas for shifting the time series
-        return_cross_correlation_df (bool): Whether or not to return the matrix of cross correlations for all
-            sensors. The structure is (time lag, sensor_column)
+        return_cross_correlation_df (bool): Whether or not to return the cross correlations for all columns.
+            This is a DataFrame containing the cross correlation for all calculated times
     Returns:
-        DataFrame: Sorted DataFrame with columns (column, max_correlation, lag) by descending correlation
+        DataFrame: Sorted DataFrame with columns (column, max_correlation, lag) by descending absolute correlation
+        DataFrame, optional: Cross correlation for each time lag for each sensor
     """
+    diffs = df.index.to_series().diff()
+    dmin, dmax = diffs.min(), diffs.max()
+    assert dmin == dmax, 'Time series must be evenly spaced'
+    assert df.isna().sum().sum() == 0, 'NaN values must be interpolated before calculating cross-correlation'
+
     # Enforce most common time spacing in main column
-    time_interval = df.index.to_series().diff().min()
+    time_interval = dmin
     relate_to_df = df[relate_to]
 
     # Round lag timings to integer multiples of the minimum shifts
@@ -84,7 +90,7 @@ def columns_by_max_cross_correlation(df: pd.DataFrame,
     max_lags = lags_idx[max_corr_idxs] * time_interval
 
     # Sorted indices by correlation
-    max_corrs = np.nanmax(np.abs(cross_correlations), axis=0)
+    max_corrs = cross_correlations[(max_corr_idxs, np.arange(max_corr_idxs.shape[0]))]
     sorted_idxs = max_corrs.argsort()[::-1]
     # print(max_corr_idxs.shape, max_corrs.shape, sorted_idxs)
     out_df = pd.DataFrame({
