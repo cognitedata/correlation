@@ -6,5 +6,5 @@
 Documentation
 =============
 
-.. automodule:: cognite.package_template.package_template
+.. automodule:: cognite.correlation.correlation
     :members:

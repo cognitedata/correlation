@@ -21,7 +21,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
-import cognite.package_template  # isort:skip
+import cognite.correlation  # isort:skip
 
 # -- General configuration ------------------------------------------------
 
@@ -47,8 +47,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "cognite-package-template"
-copyright = "2018, Cognite"
+project = "cognite-correlation"
+copyright = "2019, Cognite"
 author = "Cognite"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -56,7 +56,7 @@ author = "Cognite"
 # built documents.
 #
 # The short X.Y version.
-version = cognite.package_template.__version__
+version = cognite.correlation.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -157,7 +157,7 @@ texinfo_documents = [
         "{} Documentation".format(project),
         author,
         project,
-        "One line description of project.",
+        "Package for calculating correlations for time series data",
         "Miscellaneous",
     )
 ]
