@@ -24,7 +24,7 @@ podTemplate(
         configMapVolume(configMapName: 'codecov-script-configmap', mountPath: '/codecov-script'),
     ],
     envVars: [
-        secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-python-package-template', secretKey: 'token.txt'),
+        // secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-python-package-template', secretKey: 'token.txt'),
         // /codecov-script/upload-report.sh relies on the following
         // Jenkins and Github environment variables.
         envVar(key: 'BRANCH_NAME', value: env.BRANCH_NAME),
@@ -41,8 +41,8 @@ podTemplate(
             }
         }
 
-        def pipVersion = sh(returnStdout: true, script: 'pipenv run yolk -V cognite-model-hosting | sort -n | tail -1 | cut -d\\  -f 2').trim()
-        def currentVersion = sh(returnStdout: true, script: 'sed -n -e "/^__version__/p" cognite/package_template/__init__.py | cut -d\\" -f2').trim()
+        def pipVersion = sh(returnStdout: true, script: 'pipenv run yolk -V cognite-correlation | sort -n | tail -1 | cut -d\\  -f 2').trim()
+        def currentVersion = sh(returnStdout: true, script: 'sed -n -e "/^__version__/p" cognite/correlation/__init__.py | cut -d\\" -f2').trim()
         println("This version: " + currentVersion)
         println("Latest pip version: " + pipVersion)
 
@@ -75,11 +75,11 @@ podTemplate(
             stage('Build') {
                 sh("python3 setup.py sdist bdist_wheel")
             }
-            // if (env.BRANCH_NAME == 'master' && currentVersion != pipVersion) {
-            //    stage('Release') {
-            //        sh("pipenv run twine upload --config-file /pypi/.pypirc dist/*")
-            //    }
-            //}
+            if (env.BRANCH_NAME == 'master' && currentVersion != pipVersion) {
+                stage('Release') {
+                    sh("pipenv run twine upload --config-file /pypi/.pypirc dist/*")
+                }
+            }
         }
     }
 }

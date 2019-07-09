@@ -17,6 +17,8 @@ tox-pyenv = "*"
 pre-commit = "*"
 
 [packages]
+numpy = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"
