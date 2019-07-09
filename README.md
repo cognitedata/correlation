@@ -4,10 +4,10 @@
 
 Python Package Template
 =======================
-[![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/python-package-template/master)](https://jenkins.cognite.ai/job/github-builds/job/python-package-template/job/master/)
-[![codecov](https://codecov.io/gh/cognitedata/python-package-template/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitedata/python-package-template)
+[![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/correlation/master)](https://jenkins.cognite.ai/job/github-builds/job/correlation/job/master/)
+[![codecov](https://codecov.io/gh/cognitedata/correlation/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitedata/correlation)
 
-Template for Cognite Python packages
+Correlation analysis tool for contextualization
 
 ## Setup
 This package setup includes the following
