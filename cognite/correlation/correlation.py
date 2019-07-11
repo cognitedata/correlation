@@ -67,7 +67,7 @@ def columns_by_max_cross_correlation(
     # Sorted indices by correlation
     max_corrs = cross_correlations[(max_corr_idxs, np.arange(max_corr_idxs.shape[0]))]
     sorted_idxs = np.abs(max_corrs).argsort()[::-1]
-    # print(max_corr_idxs.shape, max_corrs.shape, sorted_idxs)
+
     out_df = pd.DataFrame(
         {"col": df.columns[sorted_idxs], "corr": max_corrs[sorted_idxs], "lag": -max_lags[sorted_idxs]}
     )
