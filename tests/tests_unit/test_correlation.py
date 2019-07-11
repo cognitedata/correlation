@@ -20,14 +20,12 @@ with_na = pd.DataFrame(
 
 
 def test_cross_correlate():
-    np.random.seed(0)
     df = no_na
     corr = cognite.correlation.cross_correlate(df, df["y"])
     assert corr["z"] == 0.04169206868197918
 
 
 def test_cross_correlate_nans():
-    np.random.seed()
     df = with_na
     corr = cognite.correlation.cross_correlate(df, df["x"])
     assert not corr.isna().any()
