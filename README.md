@@ -10,7 +10,7 @@ Correlation
 Correlation analysis tool for contextualization
 
 ## Documentation
-Documentation can be found [here](#)
+Documentation can be found [here](https://cognite-docs.readthedocs-hosted.com/projects/cognite-cognite-correlation/en/latest/)
 
 ## Prerequisites
 The package requires Python3 (>= 3.5) and pip
