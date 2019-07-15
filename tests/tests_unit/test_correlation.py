@@ -6,9 +6,7 @@ import pandas as pd
 import cognite.correlation
 
 np.random.seed(0)
-no_na = pd.DataFrame(
-    {"x": range(10), "y": (*range(10, 1, -1), 3), "z": np.random.randint(0, 100, 10)}
-)
+no_na = pd.DataFrame({"x": range(10), "y": (*range(10, 1, -1), 3), "z": np.random.randint(0, 100, 10)})
 
 np.random.seed(0)
 with_na = pd.DataFrame(
@@ -34,27 +32,20 @@ def test_cross_correlate_nans():
 
 
 def test_max_cross_correlation():
-    drange = pd.date_range(
-        start=datetime(2017, 1, 1), end=datetime(2018, 1, 1), freq="30D"
-    )
+    drange = pd.date_range(start=datetime(2017, 1, 1), end=datetime(2018, 1, 1), freq="30D")
     ddiff = drange - datetime(2017, 1, 1)
     df = pd.DataFrame(
         {
             "datetime": drange,
-            "x": np.sin(2 * np.pi * (ddiff / timedelta(days=60)))
-            + np.random.rand(ddiff.shape[0]) * 0.1,
-            "y": np.sin(
-                2 * np.pi * ((ddiff + timedelta(days=30)) / timedelta(days=60))
-            ),  # Response after x
+            "x": np.sin(2 * np.pi * (ddiff / timedelta(days=60))) + np.random.rand(ddiff.shape[0]) * 0.1,
+            "y": np.sin(2 * np.pi * ((ddiff + timedelta(days=30)) / timedelta(days=60))),  # Response after x
             "z": np.sin(2 * np.pi * ((ddiff - timedelta(days=30)) / timedelta(days=60)))
             + np.random.rand(ddiff.shape[0]) * 0.3,
         }
     )
     df.set_index("datetime", inplace=True)
     # Want to find a cause, will only look back in time
-    lags = pd.timedelta_range(
-        start=timedelta(days=-50), end=timedelta(days=50), periods=101
-    )
+    lags = pd.timedelta_range(start=timedelta(days=-50), end=timedelta(days=50), periods=101)
     corr_info, cross = cognite.correlation.columns_by_max_cross_correlation(
         df, "y", lags, return_cross_correlation_df=True
     )
