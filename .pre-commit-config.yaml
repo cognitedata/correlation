@@ -3,4 +3,4 @@ repos:
   rev: e2944b2
   hooks:
   - id: isort
-//  - id: black
+  - id: black
