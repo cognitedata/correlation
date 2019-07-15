@@ -14,7 +14,7 @@ def cross_correlate(df: pd.DataFrame, relate_to_series: pd.Series, lag_idx=0):
         df (pandas.Series): Time series data to correlate with some series
         relate_to_series (pandas.Series): Pandas Series with time series data to relate df to. Must have the same
         temporal spacing as df.
-        lag_idx (int): The amount of indices to move the DataFrame in relation to the series.
+        lag_idx (int): How many indices to move the DataFrame in relation to the series.
     Returns:
         pandas.DataFrame
     """
@@ -23,9 +23,12 @@ def cross_correlate(df: pd.DataFrame, relate_to_series: pd.Series, lag_idx=0):
 
 
 def columns_by_max_cross_correlation(
-    df: pd.DataFrame, relate_to: Union[int, str], lags: pd.TimedeltaIndex, return_cross_correlation_df: bool = False
+    df: pd.DataFrame,
+    relate_to: Union[int, str],
+    lags: pd.TimedeltaIndex,
+    return_cross_correlation_df: bool = False,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """Find lag of highest correlation and return relevant information for all columns.
+    """Find lag of highest correlation and return relevant information for all columns of the inputted DataFrame.
     Note that the operation requires a DataFrame with even temporal spacing.
 
     It is recommended to either have a lot of data in the data frame, or to use a short time frame for the lags,
@@ -33,7 +36,7 @@ def columns_by_max_cross_correlation(
 
     Args:
         df (pandas.DataFrame): Time series data
-        relate_to (Union[int, str]): Column to compare others with
+        relate_to (Union[int, str]): Name of column to compare others with
         lags (pandas.TimedeltaIndex): Pandas sequence of timedeltas for shifting the time series
         return_cross_correlation_df (bool): Whether or not to return the cross correlations for all columns.
             This is a pandas.DataFrame containing the cross correlation for all calculated lags.
@@ -45,7 +48,9 @@ def columns_by_max_cross_correlation(
     diffs = df.index.to_series().diff()
     dmin, dmax = diffs.min(), diffs.max()
     assert dmin == dmax, "Time series must be evenly spaced"
-    assert df.isna().sum().sum() == 0, "NaN values must be interpolated away before calculating cross-correlation"
+    assert (
+        df.isna().sum().sum() == 0
+    ), "NaN values must be interpolated away before calculating cross-correlation"
 
     # Enforce most common time spacing in main column
     time_interval = dmin
@@ -69,11 +74,16 @@ def columns_by_max_cross_correlation(
     sorted_idxs = np.abs(max_corrs).argsort()[::-1]
 
     out_df = pd.DataFrame(
-        {"col": df.columns[sorted_idxs], "corr": max_corrs[sorted_idxs], "lag": -max_lags[sorted_idxs]}
+        {
+            "col": df.columns[sorted_idxs],
+            "corr": max_corrs[sorted_idxs],
+            "lag": -max_lags[sorted_idxs],
+        }
     )
     if return_cross_correlation_df:
         cross_correlations = pd.DataFrame(cross_correlations)
         cross_correlations.set_index(lags_idx * time_interval, inplace=True)
         cross_correlations.columns = df.columns
+        cross_correlations = cross_correlations[df.columns[sorted_idxs]]
         return out_df, cross_correlations
     return out_df
