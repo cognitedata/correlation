@@ -8,6 +8,6 @@ setup(
     name="cognite-correlation",
     version=version,
     packages=["cognite." + p for p in find_packages(where="cognite")],
-    install_requires=["pandas", "numpy"],
+    install_requires=["pandas", "numpy", "matplotlib"],
     python_requires=">=3.5",
 )
