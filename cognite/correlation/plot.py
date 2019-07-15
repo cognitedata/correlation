@@ -71,11 +71,11 @@ def plot_cross_correlations(
             formatter = ticker.FuncFormatter(_time_ticks)
             plt.gca().xaxis.set_major_formatter(formatter)
             plt.xticks(rotation=60)
-            plt.show()
+            plt.show(block=False)
     else:
         df_sec.plot(figsize=(20, 10), **mpl_args)
         plt.gcf().set_facecolor("white")
         formatter = ticker.FuncFormatter(_time_ticks)
         plt.gca().xaxis.set_major_formatter(formatter)
         plt.xticks(rotation=60)
-        plt.show()
+        plt.show(block=False)
