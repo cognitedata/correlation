@@ -1,6 +1,6 @@
 @Library('jenkins-helpers@v0.1.12') _
 
-def label = "cognite-package-template-${UUID.randomUUID().toString()}"
+def label = "cognite-correlation-${UUID.randomUUID().toString()}"
 
 podTemplate(
     label: label,
@@ -24,7 +24,7 @@ podTemplate(
         configMapVolume(configMapName: 'codecov-script-configmap', mountPath: '/codecov-script'),
     ],
     envVars: [
-        // secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-python-package-template', secretKey: 'token.txt'),
+        secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-correlation', secretKey: 'token.txt'),
         // /codecov-script/upload-report.sh relies on the following
         // Jenkins and Github environment variables.
         envVar(key: 'BRANCH_NAME', value: env.BRANCH_NAME),
@@ -55,7 +55,7 @@ podTemplate(
             }
             stage('Check code style') {
                 sh("pipenv run black -l 120 --check .")
-                sh("pipenv run isort -w 120 -m 3 -tc -rc --check-only .")
+                // sh("pipenv run isort -w 120 -m 3 -tc -rc --check-only .")
             }
             stage('Build Docs') {
                 dir('./docs'){
