@@ -45,7 +45,10 @@ def plot_cross_correlations(
     if cols_to_plot is not None:
         # Make indexable
         cols_to_plot = np.array(cols_to_plot)
-        assert cols_to_plot.dtype.kind in ("i", "U"), "cols_to_plot must be an iterable of strings or ints"
+        assert cols_to_plot.dtype.kind in (
+            "i",
+            "U",
+        ), "cols_to_plot must be an iterable of strings or ints"
         if cols_to_plot.dtype.kind == "i":
             assert np.all(
                 (cols_to_plot < cross_correlation_df.shape[1]) & (cols_to_plot >= 0)
@@ -55,7 +58,9 @@ def plot_cross_correlations(
             [col in cross_correlation_df.columns for col in cols_to_plot]
         ), "All columns to plot must exist in the DataFrame"
         cross_correlation_df = cross_correlation_df[cols_to_plot]
-    df_sec = cross_correlation_df.set_index(cross_correlation_df.index.to_series().apply(_td_to_sec))
+    df_sec = cross_correlation_df.set_index(
+        cross_correlation_df.index.to_series().apply(_td_to_sec)
+    )
     if separate_plots:
         for colname in df_sec.columns:
             # Information about plotted cross-correlation
@@ -66,7 +71,11 @@ def plot_cross_correlations(
             plt.plot(col, **mpl_args)
             plt.gca().axvline(maxtime)
             plt.suptitle(colname + "\n")
-            plt.title("Max Correlation: {}, time lag: {}".format(str(maxval)[:6], str(_time_ticks(maxtime))))
+            plt.title(
+                "Max Correlation: {}, time lag: {}".format(
+                    str(maxval)[:6], str(_time_ticks(maxtime))
+                )
+            )
             plt.gcf().set_facecolor("white")
             formatter = ticker.FuncFormatter(_time_ticks)
             plt.gca().xaxis.set_major_formatter(formatter)
