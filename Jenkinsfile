@@ -75,7 +75,7 @@ podTemplate(
             stage('Build') {
                 sh("python3 setup.py sdist bdist_wheel")
             }
-            if (env.BRANCH_NAME == 'master' && currentVersion != pipVersion) {
+            if (env.BRANCH_NAME == 'master' /* && currentVersion != pipVersion */) {
                 stage('Release') {
                     sh("pipenv run twine upload --config-file /pypi/.pypirc dist/*")
                 }
