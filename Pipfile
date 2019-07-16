@@ -19,6 +19,7 @@ pre-commit = "*"
 [packages]
 numpy = "*"
 pandas = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"
