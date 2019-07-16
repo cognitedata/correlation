@@ -13,11 +13,19 @@ def cross_correlate(df: pd.DataFrame, relate_to_series: pd.Series, lag_idx=0):
     Args:
         df (pandas.Series): Time series data to correlate with some series
         relate_to_series (pandas.Series): Pandas Series with time series data to relate df to. Must have the same
-        temporal spacing as df.
+            temporal spacing as df.
         lag_idx (int): How many indices to move the DataFrame in relation to the series.
+
     Returns:
-        pandas.DataFrame
+        pandas.DataFrame: Pandas DataFrame containing the cross correlations of the columns.
+
+    Examples:
+        >>> df = pd.DataFrame({'x': (1, 7, 3, 5), 'y': (3, 7, 6, 4)})
+        >>> cross_correlate(df, df['x'], lag_idx=1)
+        x   -0.981981
+        y   -0.960769
     """
+
     correlations = df.corrwith(relate_to_series.shift(-lag_idx))
     return correlations
 
@@ -41,6 +49,16 @@ def columns_by_max_cross_correlation(
         Union[pandas.DataFrame, Tuple[pandas.DataFrame, pandas.DataFrame]]: Pandas DataFrame containing results of
         calculations, and optionally a DataFrame containing the cross correlations for each column at all calculated
         lags.
+
+    Examples:
+        Return maximum correlations and time lags for a simple dataframe.
+
+        >>> df = pd.DataFrame({'datetime': pd.date_range(datetime(2017, 1, 1), datetime(2017, 1, 3), periods=10),
+        >>>                    'x': np.sin(np.linspace(0, 2 * np.pi, 10)),
+        >>>                    'y': np.sin(np.linspace(1, 2 * np.pi + 1, 10))}).set_index('datetime')
+        >>> lags = pd.timedelta_range(timedelta(days=-3), timedelta(), periods=10)
+        >>> columns_by_cross_correlation(df, 'x', lags)
+
     """
     diffs = df.index.to_series().diff()
     dmin, dmax = diffs.min(), diffs.max()
