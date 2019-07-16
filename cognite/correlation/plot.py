@@ -24,11 +24,8 @@ def plot_cross_correlations(
     separate_plots: bool = True,
     mpl_args: Dict[str, Any] = None,
 ) -> None:
-    """Find lag of highest correlation and return relevant information for all columns.
-    Note that the operation requires a DataFrame with even temporal spacing.
-
-    It is recommended to either have a lot of data in the data frame, or to use a short time frame for the lags,
-    as the results are unstable if too few data points overlap in the time shifted time series.
+    """Plot cross-correlations over time lags. The cols_to_plot parameter can either be an iterable of strings of
+    columns to plot, or a list of integers of the indices of the sorted list of columns to display.
 
     Args:
         cross_correlation_df (pd.DataFrame): The DataFrame returned from columns_by_max_correlation (with the optional
@@ -39,6 +36,11 @@ def plot_cross_correlations(
         mpl_args (Dict[str, Any]): Additional parameters for Matplotlib plotting function
     Returns:
         None
+
+    Examples:
+        Plot the cross-correlation for columns numbered 1-4 of the dataframe (0 is excluded to not plot auto-correlation).
+
+        >>> plot_cross_correlation(cross_correlation_df, range(1,5))
     """
     if mpl_args is None:
         mpl_args = {}
@@ -60,11 +62,11 @@ def plot_cross_correlations(
         for colname in df_sec.columns:
             # Information about plotted cross-correlation
             col = df_sec[colname]
-            argmax = np.abs(col.values).argmax()
+            argmax = np.nanargmax(np.abs(col.values))
             maxval, maxtime = col.values[argmax], col.index[argmax]
             plt.figure(figsize=(15, 7))
             plt.plot(col, **mpl_args)
-            plt.gca().axvline(maxtime)
+            plt.gca().axvline(maxtime, color="r")
             plt.suptitle(colname + "\n")
             plt.title("Max Correlation: {}, time lag: {}".format(str(maxval)[:6], str(_time_ticks(maxtime))))
             plt.gcf().set_facecolor("white")
