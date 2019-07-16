@@ -8,3 +8,6 @@ Documentation
 
 .. automodule:: cognite.correlation.correlation
     :members:
+
+.. automodule:: cognite.correlation.plot
+    :members:
