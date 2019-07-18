@@ -26,7 +26,7 @@ def cross_correlate(df: pd.DataFrame, relate_to_series: pd.Series, lag_idx=0):
         y   -0.960769
     """
 
-    correlations = df.corrwith(relate_to_series.shift(-lag_idx))
+    correlations = df.corrwith(relate_to_series.shift(lag_idx))
     return correlations
 
 
@@ -87,7 +87,7 @@ def columns_by_max_cross_correlation(
     sorted_idxs = np.abs(max_corrs).argsort()[::-1]
 
     out_df = pd.DataFrame(
-        {"col": df.columns[sorted_idxs], "corr": max_corrs[sorted_idxs], "lag": -max_lags[sorted_idxs]}
+        {"col": df.columns[sorted_idxs], "corr": max_corrs[sorted_idxs], "lag": max_lags[sorted_idxs]}
     )
     if return_cross_correlation_df:
         cross_correlations = pd.DataFrame(cross_correlations)
