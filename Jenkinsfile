@@ -24,7 +24,7 @@ podTemplate(
         configMapVolume(configMapName: 'codecov-script-configmap', mountPath: '/codecov-script'),
     ],
     envVars: [
-        secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-correlation', secretKey: 'token.txt'),
+        secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-tokens', secretKey: 'correlation'),
         // /codecov-script/upload-report.sh relies on the following
         // Jenkins and Github environment variables.
         envVar(key: 'BRANCH_NAME', value: env.BRANCH_NAME),
