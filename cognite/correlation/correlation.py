@@ -39,6 +39,10 @@ def columns_by_max_cross_correlation(
     It is recommended to either have a lot of data in the data frame, or to use a short time frame for the lags,
     as the results are unstable if too few data points overlap in the time shifted time series.
 
+    Note about time lag:
+    Time lag is defined such that with perfect correlation, original time series + time lag = lagged time series
+    This means that an effect of the relate_to time series would have a positive time lag.
+
     Args:
         df (pandas.DataFrame): Time series data
         relate_to (Union[int, str]): Name of column to compare others with
@@ -62,7 +66,7 @@ def columns_by_max_cross_correlation(
     """
     diffs = df.index.to_series().diff()
     dmin, dmax = diffs.min(), diffs.max()
-    assert dmin == dmax, "Time series must be evenly spaced"
+    assert round(dmin.total_seconds(), 7) == round(dmax.total_seconds(), 7), "Time series must be evenly spaced"
     assert df.isna().sum().sum() == 0, "NaN values must be interpolated away before calculating cross-correlation"
 
     # Enforce most common time spacing in main column
